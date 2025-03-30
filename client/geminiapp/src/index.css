@@ -13,3 +13,31 @@ body {
   outline-offset: 2px;
 }
 
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+/* Custom selection styles */
+::selection {
+  background: #b3d4fc;
+  color: #000;
+}
+/* Custom link styles */
+a {
+  color: #1e90ff;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}

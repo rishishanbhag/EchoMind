@@ -1,46 +1,58 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import fs from "fs";
-import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
+import dotenv from "dotenv";
+import multer from "multer"; // 📸 For image uploads
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 dotenv.config();
 const app = express();
+
+// CORS Setup
+app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+
 const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-// Configure CORS to allow requests from your frontend
-app.use(cors({
-  origin: "http://localhost:5173", // Replace with your frontend's URL
-  methods: ["GET", "POST"],
-  credentials: true,
-}));
-app.use(express.json());
+// Initialize Gemini AI
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// Multer Setup for Image Uploads
+const upload = multer({ storage: multer.memoryStorage() });
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-app.get("/gemini", async (req, res) => {
+/** Handle Text & Image Input */
+app.post("/image-chat", upload.single("image"), async (req, res) => {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const { chat } = req.body;
+    const parts = [];
 
-    const chat = model.startChat({
-      history: req.body.history || [],
-    });
+    // Add text input if provided
+    if (chat) {
+      parts.push({ text: chat });
+    }
 
-    const msg = req.body.text || "Hello, Gemini!";
-    const result = await chat.sendMessage(msg, {
-      temperature: 0.5,
-      maxOutputTokens: 50,
-    });
+    // Add image input if provided
+    if (req.file) {
+      parts.push({
+        inlineData: {
+          mimeType: req.file.mimetype,
+          data: req.file.buffer.toString("base64"),
+        },
+      });
+    }
 
-    const response = result.getResponse();
-    const text = response.getText();
-    res.send(text);
+    // Ensure there's at least one part (text or image)
+    if (parts.length === 0) {
+      return res.status(400).json({ error: "No input provided" });
+    }
+
+    // Generate AI response
+    const result = await model.generateContent({ contents: [{ parts }] });
+    const responseText = result.response.text();
+
+    res.json({ text: responseText });
   } catch (error) {
-    console.error(error);
-    res.status(500).send("An error occurred");
+    console.error("Error processing request:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
