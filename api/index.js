@@ -56,3 +56,5 @@ app.post("/image-chat", upload.single("image"), async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+export default app;

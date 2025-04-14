@@ -28,7 +28,7 @@ export default function ViteLanding() {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/image-chat", {
+      const res = await fetch("/api/image-chat", {
         method: "POST",
         body: formData, // FormData includes both text & image
       });
