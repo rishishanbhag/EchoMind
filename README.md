@@ -1,27 +1,5 @@
 Here is the README content you can directly copy and paste:
 
-```markdown
-# EchoMind
-
-**EchoMind** is a project primarily built using **JavaScript (90.8%)**, alongside **CSS (6.2%)** and **HTML (3%)**.
-
-## Table of Contents
-- [About](#about)
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-
-## About
-
-EchoMind is a [brief description of what your project does]. This project was created to [state the purpose or goals of the project].
-
-## Features
-- [Feature 1]
-- [Feature 2]
-- [Feature 3]
-
 ## Installation
 
 To get started with EchoMind, follow these steps:
