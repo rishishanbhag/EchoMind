@@ -1,4 +1,4 @@
-Here is the README content you can directly copy and paste:
+
 
 ## Installation
 
@@ -45,9 +45,3 @@ Contributions are welcome! To contribute:
    ```
 5. Open a pull request.
 
-## License
-
-This project is licensed under the [LICENSE NAME] License. See the `LICENSE` file for more details.
-```
-
-Replace `[brief description of what your project does]`, `[state the purpose or goals of the project]`, and `[LICENSE NAME]` with the appropriate details for your project.
