@@ -20,7 +20,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/client/geminiapp/dist/$1"
+      "dest": "/client/geminiapp/dist/index.html"
     }
   ]
 }
