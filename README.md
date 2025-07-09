@@ -43,7 +43,7 @@ EchoMind/
 
 ### 1. Clone the repository
 ```sh
-git clone <your-repo-url>
+git clone https://github.com/rishishanbhag/EchoMind.git
 cd EchoMind
 ```
 
