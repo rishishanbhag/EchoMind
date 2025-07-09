@@ -144,12 +144,7 @@ export default function ViteLanding() {
                     >
                       Submit
                     </button>
-                    <button
-                      onClick={testBackend}
-                      className="h-12 px-6 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 transition-colors"
-                    >
-                      Test Backend
-                    </button>
+                    
                     <button
                       onClick={handleClear}
                       className="h-12 px-6 border-2 border-black text-black rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-colors"
