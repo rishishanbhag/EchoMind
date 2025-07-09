@@ -28,7 +28,9 @@ export default function ViteLanding() {
     }
 
     try {
-      const res = await fetch("/api/image-chat", {
+      // Use environment variable for API URL, fallback to your deployed backend
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://echo-mind-backend.vercel.app';
+      const res = await fetch(`${API_BASE_URL}/api/image-chat`, {
         method: "POST",
         body: formData, // FormData includes both text & image
       });

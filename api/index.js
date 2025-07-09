@@ -7,8 +7,19 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 dotenv.config();
 const app = express();
 
-// CORS Setup - Allow all origins for Vercel deployment
-app.use(cors());
+// CORS Setup - Allow specific origins for production and localhost for development
+const corsOptions = {
+  origin: [
+    'https://echo-mind-frontend.vercel.app',
+    'http://localhost:5173', // Vite default port
+    'http://localhost:3000',
+    'http://127.0.0.1:5173'
+  ],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 
 // Body parsing middleware
 app.use(express.json());
