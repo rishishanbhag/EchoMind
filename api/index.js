@@ -17,10 +17,12 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// For Vercel, we don't need app.listen() as it's handled by the platform
-// But for local development, we need to listen on a port
+// For Vercel serverless functions, we need to export the app
+// For local development, we listen on a port
 const PORT = process.env.PORT || 3000;
-if (process.env.NODE_ENV !== 'production') {
+
+// Only listen in development or when NODE_ENV is not set
+if (!process.env.VERCEL && process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
 

@@ -12,7 +12,10 @@ export default function ViteLanding() {
       const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://echo-mind-backend.vercel.app';
       console.log('Testing backend at:', `${API_BASE_URL}/api/health`);
       
-      const res = await fetch(`${API_BASE_URL}/api/health`);
+      const res = await fetch(`${API_BASE_URL}/api/health`, {
+        method: 'GET',
+        mode: 'cors'
+      });
       const data = await res.json();
       console.log('Backend test result:', data);
       setOutput(`Backend test: ${JSON.stringify(data)}`);
@@ -50,8 +53,11 @@ export default function ViteLanding() {
       
       const res = await fetch(`${API_BASE_URL}/api/image-chat`, {
         method: "POST",
-        body: formData, // FormData includes both text & image
-        mode: 'cors', // Explicitly set CORS mode
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ chat: input }),
+        mode: 'cors',
       });
 
       console.log('Response status:', res.status);
