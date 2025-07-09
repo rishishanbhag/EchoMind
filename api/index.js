@@ -7,19 +7,11 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 dotenv.config();
 const app = express();
 
-// CORS Setup - Allow specific origins for production and localhost for development
-const corsOptions = {
-  origin: [
-    'https://echo-mind-frontend.vercel.app',
-    'http://localhost:5173', // Vite default port
-    'http://localhost:3000',
-    'http://127.0.0.1:5173'
-  ],
-  credentials: true,
-  optionsSuccessStatus: 200
-};
-
-app.use(cors(corsOptions));
+// CORS Setup - Allow all origins for now to debug
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
 
 // Body parsing middleware
 app.use(express.json());
@@ -38,6 +30,16 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 // Multer Setup for Image Uploads
 const upload = multer({ storage: multer.memoryStorage() });
+
+// Health check endpoint
+app.get("/api/health", (req, res) => {
+  res.json({ status: "OK", message: "Backend is running" });
+});
+
+// Root endpoint
+app.get("/", (req, res) => {
+  res.json({ message: "EchoMind Backend API" });
+});
 
 /** Handle Text & Image Input */
 app.post("/api/image-chat", upload.single("image"), async (req, res) => {

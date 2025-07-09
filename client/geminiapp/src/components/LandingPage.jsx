@@ -6,6 +6,22 @@ export default function ViteLanding() {
   const [output, setOutput] = useState(""); // AI response
   const [outputImage, setOutputImage] = useState(null);
 
+  // Test backend connection
+  const testBackend = async () => {
+    try {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://echo-mind-backend.vercel.app';
+      console.log('Testing backend at:', `${API_BASE_URL}/api/health`);
+      
+      const res = await fetch(`${API_BASE_URL}/api/health`);
+      const data = await res.json();
+      console.log('Backend test result:', data);
+      setOutput(`Backend test: ${JSON.stringify(data)}`);
+    } catch (error) {
+      console.error('Backend test failed:', error);
+      setOutput(`Backend test failed: ${error.message}`);
+    }
+  };
+
   const handleTextChange = (e) => {
     setInput(e.target.value);
   };
@@ -30,21 +46,30 @@ export default function ViteLanding() {
     try {
       // Use environment variable for API URL, fallback to your deployed backend
       const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://echo-mind-backend.vercel.app';
+      console.log('Making request to:', `${API_BASE_URL}/api/image-chat`);
+      
       const res = await fetch(`${API_BASE_URL}/api/image-chat`, {
         method: "POST",
         body: formData, // FormData includes both text & image
+        mode: 'cors', // Explicitly set CORS mode
       });
 
+      console.log('Response status:', res.status);
+      console.log('Response ok:', res.ok);
+
       if (!res.ok) {
-        throw new Error(`Failed to fetch data from the server: ${res.statusText}`);
+        const errorText = await res.text();
+        console.error('Error response:', errorText);
+        throw new Error(`Failed to fetch data from the server: ${res.status} ${res.statusText}`);
       }
 
       const data = await res.json();
+      console.log('Success response:', data);
       setOutput(data.text || "No response from server");
       setOutputImage(null);
     } catch (error) {
       console.error("Error fetching response:", error);
-      setOutput("Error fetching response");
+      setOutput(`Error fetching response: ${error.message}`);
       setOutputImage(null);
     }
   };
@@ -112,6 +137,12 @@ export default function ViteLanding() {
                       className="h-12 px-6 bg-black text-white rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-colors"
                     >
                       Submit
+                    </button>
+                    <button
+                      onClick={testBackend}
+                      className="h-12 px-6 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 transition-colors"
+                    >
+                      Test Backend
                     </button>
                     <button
                       onClick={handleClear}
