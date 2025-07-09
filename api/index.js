@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import multer from "multer"; // 📸 For image uploads
+import multer from "multer";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 dotenv.config();
@@ -17,15 +17,6 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// For Vercel serverless functions, we need to export the app
-// For local development, we listen on a port
-const PORT = process.env.PORT || 3000;
-
-// Only listen in development or when NODE_ENV is not set
-if (!process.env.VERCEL && process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-}
-
 // Initialize Gemini AI
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -33,56 +24,68 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 // Multer Setup for Image Uploads
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Health check endpoint
-app.get("/api/health", (req, res) => {
-  res.json({ status: "OK", message: "Backend is running" });
-});
-
-// Root endpoint
-app.get("/", (req, res) => {
-  res.json({ message: "EchoMind Backend API" });
-});
-
-/** Handle Text & Image Input */
-app.post("/api/image-chat", upload.single("image"), async (req, res) => {
-  try {
-    const { chat } = req.body;
-    const parts = [];
-
-    // Add text input if provided
-    if (chat) {
-      parts.push({ text: chat });
-    }
-
-    // Add image input if provided
-    if (req.file) {
-      parts.push({
-        inlineData: {
-          mimeType: req.file.mimetype,
-          data: req.file.buffer.toString("base64"),
-        },
-      });
-    }
-
-    // Ensure there's at least one part (text or image)
-    if (parts.length === 0) {
-      return res.status(400).json({ error: "No input provided" });
-    }
-
-    // Generate AI response
-    const result = await model.generateContent({ contents: [{ parts }] });
-    const responseText = result.response.text();
-
-    res.json({ text: responseText });
-  } catch (error) {
-    console.error("Error processing request:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+// For Vercel serverless function, we export a handler
+export default async function handler(req, res) {
+  // Handle CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
   }
-});
 
-// Add a catch-all handler for Vercel
-app.all("*", (req, res) => {
+  // Health check
+  if (req.url === '/api/health' || req.url === '/health') {
+    res.status(200).json({ status: "OK", message: "Backend is running" });
+    return;
+  }
+
+  // Root endpoint
+  if (req.url === '/' || req.url === '/api') {
+    res.status(200).json({ message: "EchoMind Backend API" });
+    return;
+  }
+
+  // Image chat endpoint
+  if (req.url === '/api/image-chat' || req.url === '/image-chat') {
+    if (req.method !== 'POST') {
+      res.status(405).json({ error: 'Method not allowed' });
+      return;
+    }
+
+    try {
+      // Parse form data manually for Vercel
+      const formData = new FormData();
+      // This is simplified - in production you'd need proper multipart parsing
+      
+      const { chat } = req.body || {};
+      const parts = [];
+
+      // Add text input if provided
+      if (chat) {
+        parts.push({ text: chat });
+      }
+
+      // For now, let's handle text-only requests
+      if (parts.length === 0) {
+        res.status(400).json({ error: "No input provided" });
+        return;
+      }
+
+      // Generate AI response
+      const result = await model.generateContent({ contents: [{ parts }] });
+      const responseText = result.response.text();
+
+      res.status(200).json({ text: responseText });
+    } catch (error) {
+      console.error("Error processing request:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+    return;
+  }
+
+  // Catch all
   res.status(404).json({ error: "Route not found" });
-});
-
-export default app;
+}

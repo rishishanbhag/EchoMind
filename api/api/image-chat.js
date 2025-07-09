@@ -1,19 +1,17 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Handle CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   
   if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+    return res.status(200).end();
   }
 
   if (req.method !== 'POST') {
-    res.status(405).json({ error: 'Method not allowed' });
-    return;
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
@@ -31,17 +29,16 @@ export default async function handler(req, res) {
 
     // Ensure there's at least one part (text or image)
     if (parts.length === 0) {
-      res.status(400).json({ error: "No input provided" });
-      return;
+      return res.status(400).json({ error: "No input provided" });
     }
 
     // Generate AI response
     const result = await model.generateContent({ contents: [{ parts }] });
     const responseText = result.response.text();
 
-    res.status(200).json({ text: responseText });
+    return res.status(200).json({ text: responseText });
   } catch (error) {
     console.error("Error processing request:", error);
-    res.status(500).json({ error: "Internal Server Error", details: error.message });
+    return res.status(500).json({ error: "Internal Server Error", details: error.message });
   }
-}
+};
