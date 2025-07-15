@@ -15,25 +15,6 @@ EchoMind is an AI-powered chat application that allows users to interact with Go
 
 ---
 
-## Project Structure
-
-```
-EchoMind/
-├── api/                # Backend (Express API)
-│   ├── index.js
-│   ├── package.json
-│   └── ...
-├── client/
-│   └── geminiapp/      # Frontend (React + Vite)
-│       ├── src/
-│       ├── public/
-│       ├── package.json
-│       └── ...
-├── vercel.json         # Vercel deployment config
-└── README.md
-```
-
----
 
 ## Getting Started
 
